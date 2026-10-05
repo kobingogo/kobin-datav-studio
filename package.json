@@ -3,6 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "//": "vite 8 要求 ^20.19.0 || >=22.12.0。不钉住的话 Vercel 的默认 Node 版本一旦落到 20.19 以下，构建会以 rolldown 相关的底层错误失败，而不是一句清晰的 engines 提示。",
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "node tools/build-embedded.mjs && tsc -b && vite build",
