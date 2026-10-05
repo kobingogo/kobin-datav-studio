@@ -4,6 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import { Color, Vector3, type Group } from "three";
 import type { GeoProjection } from "d3-geo";
 import type { CityGeoJSON } from "@/types/map";
+import { palette } from "../../../theme/tokens";
 
 export interface GeoTrailProps {
   projection: GeoProjection;
@@ -45,7 +46,7 @@ export default function GeoTrail(props: GeoTrailProps) {
       <Trail
         width={1}
         length={10}
-        color={new Color(2, 10, 10)}
+        color={new Color(palette.cyan)}
         attenuation={(t) => t * t}>
         <group ref={follower} position={points.at(-1)} />
       </Trail>

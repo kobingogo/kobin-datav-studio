@@ -25,7 +25,7 @@ import {
   useFrame,
   type ThreeElements,
 } from "@react-three/fiber";
-import { useConfigStore } from "../stores";
+import { useConsole } from "../../../console/store";
 import loadTexture from "../helpers/loadTexture";
 
 import cloudUrl from "@/assets/cloud.png";
@@ -401,10 +401,18 @@ export const Cloud = (props: CloudProps) => {
   );
 };
 
+/**
+ * 高空云层
+ * ------------------------------------------------------------------
+ * 原版 opacity 0.5、volume 50，两团云在米白底上刚好是"空气感"，
+ * 换到近黑底后同样的参数会让它们变成刺眼的大白块，直接压住地图。
+ * 这里压到 0.12 并上移、拉远，让它只作为顶部的一层氛围，
+ * 不与地图主体争夺注意力。
+ */
 export default function CloudGroup() {
   const ref = useRef<Group>(null!);
   const cloud0 = useRef<Group>(null!);
-  const cloud = useConfigStore((s) => s.cloud);
+  const cloud = useConsole((s) => s.layers.cloud);
 
   useFrame((state, delta) => {
     ref.current.rotation.y = Math.cos(state.clock.elapsedTime / 2) / 2;
@@ -416,18 +424,18 @@ export default function CloudGroup() {
     <Clouds ref={ref} visible={cloud}>
       <Cloud
         ref={cloud0}
-        bounds={[50, 10, 10]}
-        position={[100, 60, 20]}
-        volume={50}
-        opacity={0.5}
-        fade={50}
+        bounds={[70, 8, 8]}
+        position={[120, 105, 20]}
+        volume={44}
+        opacity={0.12}
+        fade={70}
       />
       <Cloud
-        bounds={[50, 10, 10]}
-        position={[-60, 60, 60]}
-        volume={50}
-        opacity={0.5}
-        fade={50}
+        bounds={[70, 8, 8]}
+        position={[-90, 95, 70]}
+        volume={44}
+        opacity={0.1}
+        fade={70}
       />
     </Clouds>
   );

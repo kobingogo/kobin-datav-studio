@@ -1,13 +1,17 @@
 {
-  "name": "sc-datav",
+  "name": "kobin-dataviz",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node tools/build-embedded.mjs && tsc -b && vite build",
+    "build:app": "tsc -b && vite build",
+    "build:embedded": "node tools/build-embedded.mjs",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "previews": "node tools/shoot-previews.mjs",
+    "smoke": "node tools/smoke.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.6",
@@ -43,5 +47,7 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.45.0",
     "vite": "8.0.0"
-  }
+  },
+  "description": "Kobin 数据大屏 —— Three.js 多场景数据可视化大屏；apps/ 下挂载两个 Vue 外挂大屏，构建时以静态产物并入 public/",
+  "author": "Kobin"
 }

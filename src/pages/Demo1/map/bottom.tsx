@@ -7,7 +7,8 @@ import {
   RepeatWrapping,
   SRGBColorSpace,
 } from "three";
-import { useConfigStore } from "../stores";
+import { useConsole } from "../../../console/store";
+import { palette } from "../../../theme/tokens";
 import loadTexture from "../helpers/loadTexture";
 
 import rotationBorder1 from "@/assets/rotationBorder1.png";
@@ -46,7 +47,7 @@ export default function Bottom() {
       value: 20.0,
     },
     uColor: {
-      value: new Color(0xea580c),
+      value: new Color(palette.cyan),
     },
     uDir: {
       value: 2.0, // 1.0-xy,2.0-xz
@@ -54,7 +55,7 @@ export default function Bottom() {
   });
   const meshRef1 = useRef<Mesh>(null!);
   const meshRef2 = useRef<Mesh>(null!);
-  const rotation = useConfigStore((s) => s.rotation);
+  const rotation = useConsole((s) => s.layers.rotation);
 
   const [
     gaoGuang1Tex,
@@ -81,7 +82,7 @@ export default function Bottom() {
           transparent
           blending={NormalBlending}
           map={gaoGuang1Tex}
-          color="#fbdf88"
+          color={palette.cyanSoft}
         />
       </mesh>
       <mesh ref={meshRef1} position-z={0.1}>
@@ -89,7 +90,7 @@ export default function Bottom() {
         <meshBasicMaterial
           transparent
           map={rotationBorder1Tex}
-          color="#fbdf88"
+          color={palette.cyanSoft}
           opacity={0.2}
           depthWrite={false}
           blending={NormalBlending}
@@ -100,7 +101,7 @@ export default function Bottom() {
         <meshBasicMaterial
           transparent
           map={rotationBorder2Tex}
-          color="#fbdf88"
+          color={palette.cyanSoft}
           opacity={0.4}
           depthWrite={false}
           blending={NormalBlending}
@@ -112,7 +113,7 @@ export default function Bottom() {
           transparent
           map={gridTex}
           alphaMap={gridBlackTex}
-          color="#fbdf88"
+          color={palette.cyanSoft}
           opacity={0.1}
           depthWrite={false}
           blending={NormalBlending}
@@ -124,7 +125,7 @@ export default function Bottom() {
           transparent
           map={gridTex}
           alphaMap={gridBlackTex}
-          color="#ea580c"
+          color={palette.cyan}
           opacity={0.5}
           depthWrite={false}
           blending={NormalBlending}

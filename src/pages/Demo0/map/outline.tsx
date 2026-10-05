@@ -1,30 +1,22 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Extrude } from "@react-three/drei";
-import { useControls } from "leva";
 import { Color, Shape, Vector2, type IUniform } from "three";
 import { type GeoProjection } from "d3-geo";
+import { palette } from "../../../theme/tokens";
 
-import scOutlineData from "@/assets/sc_outline.json";
+import { outlineGeoJSON } from "@/geo";
 
 export function OutLineAnimated() {
-  const controls = useControls({
-    background: { label: "侧边颜色", value: "#0e171a" },
-    background1: {
-      label: "侧边扫光颜色",
-      value: "#90aba7",
-      transient: false,
-      onChange: (v) => {
-        uniformsRef.current.uRiseColor.value = new Color(v);
-      },
-    },
-  });
+  /* 侧边与扫光颜色取 design token。
+     原来挂在 leva 的开发期面板上，产品环境下这块侧边颜色就固定成
+     面板里那个值，与新 UI 的表面色完全脱节。 */
   const uniformsRef = useRef<{
     uRiseTime: IUniform<number>;
     uRiseColor: IUniform<Color>;
   }>({
     uRiseTime: { value: -0.8 },
-    uRiseColor: { value: new Color(controls.background1) },
+    uRiseColor: { value: new Color(palette.cyanDeep) },
   });
 
   useFrame(() => {
@@ -38,7 +30,7 @@ export function OutLineAnimated() {
     <meshPhysicalMaterial
       transparent
       opacity={0.9}
-      color={controls.background}
+      color={palette.void}
       onBeforeCompile={(shader) => {
         shader.uniforms = {
           ...shader.uniforms,
@@ -97,7 +89,7 @@ export function OutLineAnimated() {
 export default function OutLine({ projection }: { projection: GeoProjection }) {
   return (
     <group renderOrder={1}>
-      {scOutlineData.features.map((feature) =>
+      {outlineGeoJSON.features.map((feature) =>
         feature.geometry.coordinates[0].map((coordinates, coordinatesIndex) => (
           <Extrude
             key={`${feature.properties.name}--${coordinatesIndex}`}

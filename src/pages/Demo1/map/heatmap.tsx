@@ -11,7 +11,8 @@ import type { GeoProjection } from "d3-geo";
 import type { ThreeElements } from "@react-three/fiber";
 //@ts-ignore
 import heatmapJs from "keli-heatmap.js";
-import { useConfigStore } from "../stores";
+import { useConsole } from "../../../console/store";
+import { palette } from "../../../theme/tokens";
 
 import data from "@/assets/heatmapData.json";
 
@@ -24,7 +25,7 @@ export default function Heatmap(props: HeatmapProps) {
   const { projection, size = 500, ...args } = props;
   const refMesh = useRef<Mesh<PlaneGeometry, ShaderMaterial>>(null!);
 
-  const heat = useConfigStore((s) => s.heat);
+  const heat = useConsole((s) => s.layers.heat);
 
   useEffect(() => {
     const radius = 10;
@@ -34,17 +35,17 @@ export default function Heatmap(props: HeatmapProps) {
 
     const heatmap = heatmapJs.create({
       container: heatmapContainer,
-      gradient: {
-        0.5: "#1fc2e1",
-        0.6: "#24d560",
-        0.7: "#9cd522",
-        0.8: "#f1e12a",
-        0.9: "#ffbf3a",
-        1.0: "#ff0000",
-      },
+      // 单一色相由暗到亮（深空 token 的 heat 梯度），
+      // 避免原版 青→绿→黄→红 与卫星底图绿色调打架
+      gradient: Object.fromEntries(
+        palette.heat.map((c, i) => [
+          Number(((i / (palette.heat.length - 1)) * 0.5 + 0.5).toFixed(2)),
+          c,
+        ])
+      ),
       blur: 1,
       radius: radius,
-      maxOpacity: 1,
+      maxOpacity: 0.85,
       width: size,
       height: size,
     });
@@ -72,7 +73,7 @@ export default function Heatmap(props: HeatmapProps) {
     });
 
     const max = 1000;
-    const min = 2000;
+    const min = 200;
 
     heatmap.setData({
       max,
@@ -140,10 +141,10 @@ export default function Heatmap(props: HeatmapProps) {
             },
             z_scale: { value: 4.0 },
             u_color: {
-              value: new Color("#ffffff"),
+              value: new Color(palette.cyanSoft),
             },
             u_opacity: {
-              value: 1.0,
+              value: 0.85,
             },
           }}
         />

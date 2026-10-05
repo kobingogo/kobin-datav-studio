@@ -1,4 +1,5 @@
 import { MeshReflectorMaterial } from "@react-three/drei";
+import { palette } from "../../../theme/tokens";
 
 export default function Mirror() {
   return (
@@ -8,10 +9,10 @@ export default function Mirror() {
         blur={[400, 100]}
         resolution={1024}
         mixBlur={10}
-        mixStrength={10}
+        mixStrength={6}
         depthScale={1}
         minDepthThreshold={0.85}
-        color="#011024"
+        color={palette.surface}
         metalness={0.6}
         roughness={1}
       />

@@ -9,14 +9,15 @@ import {
   Vector2,
   type Group,
 } from "three";
-import { geoMercator } from "d3-geo";
 import type { CityGeoJSON } from "@/types/map";
+import { createProjection } from "@/geo";
+import { dropSlivers } from "@/geo/islands";
 import City, { type CityProps } from "./city";
 import loadTexture from "../helpers/loadTexture";
-import { useConfigStore } from "../stores";
+import { useConsole } from "../../../console/store";
 
-import map from "@/assets/sc_map.png";
-import normalMap from "@/assets/sc_normal_map.png";
+import map from "@/geo/zhejiang_map.png";
+import normalMap from "@/geo/zhejiang_normal.png";
 import Heatmap from "./heatmap";
 
 export interface BaseProps {
@@ -41,12 +42,9 @@ export default function Base(props: BaseProps) {
 
   const [texture1, texture2] = use(textures);
 
-  const projection = useMemo(() => {
-    return geoMercator()
-      .center(data.features[0].properties.centroid)
-      .scale(1000)
-      .translate([0, 0]);
-  }, [data]);
+  /* scale 由 bbox 反算（见 geo/createProjection），
+     换省不需要重调常数；构图宽度锁定后相机机位也不用动。 */
+  const projection = useMemo(() => createProjection(data), [data]);
 
   const { regions, bbox } = useMemo(() => {
     const regions: CityProps["data"][] = [];
@@ -72,10 +70,15 @@ export default function Base(props: BaseProps) {
         feature.properties.centroid ?? feature.properties.center
       )!;
 
+      /* 舟山这类群岛市有上千个碎岛，挤出后是针尖状毛刺。
+         按投影面积剔掉，阈值与省无关。 */
+      const kept = dropSlivers(points);
+      if (!kept.length) return;
+
       regions.push({
         city: feature.properties.name,
         cityId: [x, -y, depth + 0.1],
-        points,
+        points: kept,
       });
     });
 
@@ -85,18 +88,21 @@ export default function Base(props: BaseProps) {
     };
   }, [projection, data, depth]);
 
+  /* 面板编排统一由 useConsole.mapReady 驱动：地图就绪 → 面板波次入场 */
+  const setMapReady = useConsole((s) => s.setMapReady);
+  const setMapHandle = useConsole((s) => s.setMapHandle);
+
   useLayoutEffect(() => {
     if (!groupRef.current) return;
+    setMapHandle(groupRef.current);
     const tl = gsap.timeline({
-      onComplete: () => {
-        useConfigStore.setState({ mapPlayComplete: true });
-      },
+      onComplete: () => setMapReady(true),
     });
 
     tl.to(camera.position, {
-      x: 60,
-      y: 125,
-      z: 160,
+      x: 34,
+      y: 168,
+      z: 208,
       duration: 2,
       ease: "circ.out",
     });
@@ -113,15 +119,16 @@ export default function Base(props: BaseProps) {
 
     return () => {
       tl.kill();
+      setMapHandle(null);
     };
-  }, [camera]);
+  }, [camera, setMapReady, setMapHandle]);
 
   return (
     <group
       ref={groupRef}
       rotation={[-Math.PI / 2, 0, 0]}
       scale-z={0.01}
-      position-x={20}>
+      position={[10, 0, 0]}>
       {regions.map((region, idx) => (
         <City
           key={idx}

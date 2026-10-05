@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useControls } from "leva";
 import {
   BufferGeometry,
   CatmullRomCurve3,
@@ -9,7 +8,9 @@ import {
 } from "three";
 import { type GeoProjection } from "d3-geo";
 
-import scOutlineData from "@/assets/sc_outline.json";
+import { outlineGeoJSON } from "@/geo";
+import { useConsole } from "../../../console/store";
+import { palette } from "../../../theme/tokens";
 
 export default function FlyLine({ projection }: { projection: GeoProjection }) {
   const index = useRef(0); //取点索引位置
@@ -17,18 +18,15 @@ export default function FlyLine({ projection }: { projection: GeoProjection }) {
   const geometry = useRef(new BufferGeometry());
   const curve2 = useRef<CatmullRomCurve3>(null);
   const points = useRef<Vector3[]>([]);
-  const controls = useControls({
-    lineColor: { label: "边缘流光颜色", value: "#ffffff" },
-    animation: {
-      label: "边缘流光动画",
-      value: true,
-    },
-  });
+  /* 流光颜色取 token；开关接 store，参与统一的图层控件。
+     原来挂在 leva 上，等于产品环境里没有开关、也没有配色来源。 */
+  const show = useConsole((s) => s.layers.flyline);
+  const lineColor = palette.cyanSoft;
 
   useEffect(() => {
     let v3Arr: Vector3[] = [];
 
-    scOutlineData.features.map((line) => {
+    outlineGeoJSON.features.map((line) => {
       line.geometry.coordinates[0].map((coords) => {
         v3Arr = coords.map((ll) => {
           const [x, y] = projection(ll as [number, number])!;
@@ -62,7 +60,7 @@ export default function FlyLine({ projection }: { projection: GeoProjection }) {
   }, [projection]);
 
   useFrame((_, delta) => {
-    if (!curve2.current || !controls.animation) return;
+    if (!curve2.current || !show) return;
 
     const pts = points.current;
     const total = pts.length;
@@ -89,11 +87,11 @@ export default function FlyLine({ projection }: { projection: GeoProjection }) {
   });
 
   return (
-    <object3D position={[0, 0, 0.01]}>
+    <object3D position={[0, 0, 0.01]} visible={show}>
       <points geometry={geometry.current}>
         <pointsMaterial
           transparent
-          color={controls.lineColor}
+          color={lineColor}
           size={0.2}
           // blending={THREE.AdditiveBlending}
           onBeforeCompile={(shader) => {

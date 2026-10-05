@@ -5,6 +5,8 @@ import Demo0 from "./pages/Demo0";
 import Demo1 from "./pages/Demo1";
 import Demo2 from "./pages/Demo2";
 import Demo3 from "./pages/Demo3";
+import Hangzhou from "./pages/Hangzhou";
+import Smart from "./pages/Smart";
 
 const Index = lazy(() => import("./pages/Index/index"));
 
@@ -36,6 +38,9 @@ function App() {
         <Route path="/demo1" element={<Demo1 />} />
         <Route path="/demo2" element={<Demo2 />} />
         <Route path="/demo3" element={<Demo3 />} />
+        {/* 05 / 06：独立 Vue 工程构建成静态产物后用 iframe 挂载 */}
+        <Route path="/hangzhou" element={<Hangzhou />} />
+        <Route path="/smart" element={<Smart />} />
       </Routes>
     </div>
   );

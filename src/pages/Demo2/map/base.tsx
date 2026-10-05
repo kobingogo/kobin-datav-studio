@@ -22,9 +22,13 @@ import ShapeBox from "./shape";
 import FlyLine from "./flyLine";
 import Boundary from "./boundary";
 import Label from "./label";
-import { useConfigStore } from "../stores";
+import { useConsole } from "../../../console/store";
+import { useCityInteract } from "../../../console/useMapInteraction";
+import { cityMetrics } from "../../../console/data";
+import { dropSlivers } from "../../../geo/islands";
+import { palette } from "../../../theme/tokens";
 
-import scNormalMap from "@/assets/sc_normal_map1.png";
+import scNormalMap from "@/geo/zhejiang_normal.png";
 import Cones from "./cone";
 
 export interface BaseProps {
@@ -37,8 +41,13 @@ export default function Base(props: BaseProps) {
   const { data, outlineData, depth = 1 } = props;
   const groupRef = useRef<Group>(null!);
   const camera = useThree((state) => state.camera);
+  const setMapReady = useConsole((s) => s.setMapReady);
+  const setMapHandle = useConsole((s) => s.setMapHandle);
 
   const projection = useMemo(() => {
+    // 不设 scale（沿用 d3-geo 默认 152.513）：
+    // Demo2 的地图组还有一层 scale 0.5，若照抄 Demo1 的 820，
+    // 成品会比原版大 5 倍以上，相机直接钻进地表内部。
     return geoMercator()
       .center(data.features[0].properties.centroid)
       .translate([0, 0]);
@@ -72,10 +81,14 @@ export default function Base(props: BaseProps) {
         []
       );
 
+      /* 与 demo1 同一处理：剔除挤出后会变成毛刺的碎岛 */
+      const kept = dropSlivers(points);
+      if (!kept.length) return;
+
       regions.push({
         name: feature.properties.name,
         center: new Vector3(x, -y),
-        points,
+        points: kept,
       });
     });
 
@@ -99,22 +112,20 @@ export default function Base(props: BaseProps) {
       bbox,
       boundary,
     };
-  }, [projection]);
+  }, [projection, data, outlineData]);
 
   useLayoutEffect(() => {
     if (!groupRef.current) return;
+    setMapHandle(groupRef.current);
     const tl = gsap.timeline();
 
     tl.to(camera.position, {
-      x: -2,
-      y: 7,
-      z: 10,
+      x: -2.0,
+      y: 7.6,
+      z: 11.6,
       duration: 2.5,
-      // delay: 2,
       ease: "circ.out",
-      onComplete: () => {
-        useConfigStore.setState({ mapPlayComplete: true });
-      },
+      onComplete: () => setMapReady(true),
     });
     tl.to(groupRef.current.position, { x: 0, y: 0, z: 0, duration: 1 }, 2.5);
 
@@ -137,8 +148,9 @@ export default function Base(props: BaseProps) {
 
     return () => {
       tl.kill();
+      setMapHandle(null);
     };
-  }, [camera]);
+  }, [camera, setMapReady, setMapHandle]);
 
   return (
     <Center top>
@@ -172,6 +184,14 @@ export default function Base(props: BaseProps) {
   );
 }
 
+/**
+ * 单个地市州
+ * ------------------------------------------------------------------
+ * 原版只在 pointerOver 时把 scale.z 推到 1.5，且没有点击、
+ * 没有与面板的联动。这里接入 useCityInteract：
+ *   · 悬停 → 1.25×，广播 hover 给面板
+ *   · 锁定 → 1.55×，同时挤出体不再透明、边线转为青色
+ */
 function City(props: {
   depth: number;
   bbox: Box2;
@@ -186,71 +206,69 @@ function City(props: {
   const groupRef = useRef<Group>(null!);
   const vector3 = useRef(new Vector3(1, 1, 1));
 
+  const { handlers, target } = useCityInteract(data.name);
+  const pinned = useConsole((s) => s.pinned);
+  const hover = useConsole((s) => s.hover);
+  const isPinned = pinned === data.name;
+  const isHover = hover === data.name;
+  const metrics = cityMetrics[data.name];
+
   const texture = useTexture(scNormalMap);
 
   const [shape, shapeGeometry] = useMemo(() => {
     const shapes = data.points.map((e) => new Shape(e));
-    const shapeGeometry = new ShapeGeometry(shapes);
-    return [shapes, shapeGeometry];
+    const geo = new ShapeGeometry(shapes);
+    return [shapes, geo];
   }, [data.points]);
 
   useFrame((_, delta) => {
-    groupRef.current.scale.lerp(vector3.current, 0.1);
-    materialRef.current.uniforms.time.value += delta / 3;
+    groupRef.current.scale.lerp(vector3.current, 0.12);
+    if (materialRef.current)
+      materialRef.current.uniforms.time.value += delta / 3;
   });
+  vector3.current.setZ(target.z);
 
   return (
-    <object3D
-      ref={groupRef}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        vector3.current.setZ(1.5);
-        document.body.style.cursor = "pointer";
-      }}
-      onPointerOut={() => {
-        vector3.current.setZ(1);
-        document.body.style.cursor = "auto";
-      }}
-      //   onClick={(e) => {
-      //     e.stopPropagation();
-      //     gsap.to(e.camera.position, {
-      //       x: e.object.position.x,
-      //       y: e.object.position.y,
-      //       z: e.object.position.z,
-      //       duration: 2,
-      //     });
-      //   }}
-    >
+    <group ref={groupRef} {...handlers}>
       <ShapeBox bbox={bbox} args={[shape, { depth, bevelEnabled: false }]}>
         <meshStandardMaterial
           transparent
           attach="material-0"
-          color="#293b41"
+          color={isPinned ? "#2E5F7E" : "#1B2C38"}
           normalMap={texture}
           metalness={0.5}
           roughness={0.7}
           side={DoubleSide}
-          opacity={0}
+          opacity={isPinned || isHover ? 0.95 : 0.62}
+          emissive={isPinned ? palette.cyanDeep : "#000000"}
+          emissiveIntensity={isPinned ? 0.35 : 0}
         />
         <ShiftMaterial
           transparent
           attach="material-1"
           ref={materialRef}
-          opacity={0}
+          opacity={isPinned ? 1 : isHover ? 0.9 : 0.72}
           depth={depth}
         />
       </ShapeBox>
+
       <lineSegments position={[0, 0, depth + 0.05]} raycast={() => null}>
         <edgesGeometry args={[shapeGeometry]} />
-        <lineBasicMaterial transparent color="#ffffff" opacity={0} />
+        <lineBasicMaterial
+          transparent
+          opacity={isPinned ? 1 : isHover ? 0.85 : 0.3}
+          color={isPinned || isHover ? palette.cyan : palette.text}
+        />
       </lineSegments>
+
       <Label
         center
         position={[data.center.x, data.center.y, depth + 0.2]}
-        distanceFactor={10}
-        zIndexRange={[100 - 1000]}>
+        zIndexRange={[100, 1000]}
+        value={metrics ? `${metrics.power}` : ""}
+      >
         {data.name}
       </Label>
-    </object3D>
+    </group>
   );
 }

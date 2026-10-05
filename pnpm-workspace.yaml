@@ -1,0 +1,21 @@
+# sc-datav 是一个可独立构建的仓库，同时包含两个外挂大屏工程。
+#
+# 为什么需要 workspace：构建产物不进 git（见 .gitignore 里
+# public/kobin-datav-* 两行），改由 Vercel 在构建时现场生成。
+# 而 Vercel 只能看到仓库内的文件，所以两个 Vue 工程的源码必须在
+# 这个仓库里，用 workspace 让一次 pnpm install 覆盖三个工程，
+# 共享同一个 lockfile。
+#
+# 只声明 apps/*，不含根包自己：根包的 tsc / vite 构建仍按原方式进行，
+# 不受 workspace 影响。
+packages:
+  - "apps/*"
+
+# pnpm 默认不执行依赖的构建脚本，未在 allowBuilds 里表态的包会让 install
+# 直接以 ERR_PNPM_IGNORED_BUILDS 失败（strictDepBuilds 默认为 true）。
+# @parcel/watcher 是两个 Vue 工程的 vite 文件监听依赖，缺了它 dev server 不热更新。
+#
+# 注意：pnpm 11 起 onlyBuiltDependencies 已被 allowBuilds 取代，
+# 旧名字会被静默忽略 —— 表现为"配了白名单却仍然报同样的错"。
+allowBuilds:
+  "@parcel/watcher": true

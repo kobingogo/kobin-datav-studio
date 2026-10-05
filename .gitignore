@@ -13,6 +13,24 @@ dist-ssr
 back
 *.local
 
+# 外挂大屏的构建产物（由 tools/build-embedded.mjs 生成，不入库）
+# 目录名不能叫 dist —— 上一行的 `dist` 规则会把 public/dist/ 一并忽略掉，
+# 那样 Vercel 上构建产物就静默缺失，表现为 iframe 白屏而不是报错。
+public/kobin-datav-hangzhou/
+public/kobin-datav-smart/
+
+# 验证脚本的截图产物
+shots/
+
+# 外挂大屏工程自己的锁文件/依赖（由根 workspace lockfile 统一管理）
+apps/*/node_modules
+apps/*/dist
+
+# workspace 下子工程的锁文件不生效（pnpm 只读根 lockfile）。
+# 保留在磁盘上但不提交：提交会造成"改了锁文件却没生效"的错觉。
+apps/*/pnpm-lock.yaml
+apps/*/package-lock.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

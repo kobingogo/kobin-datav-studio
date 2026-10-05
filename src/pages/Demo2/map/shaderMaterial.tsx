@@ -1,15 +1,16 @@
 import { shaderMaterial } from "@react-three/drei";
 import { extend } from "@react-three/fiber";
 import { Color } from "three";
+import { palette } from "../../../theme/tokens";
 
 export default extend(
   shaderMaterial(
     {
       time: 0,
       depth: 1,
-      baseTopColor: new Color("#8fc2ff"),
-      baseBottomColor: new Color("#10182c"),
-      scanColor: new Color("#8fc2ff"),
+      baseTopColor: new Color(palette.cyanDeep),
+      baseBottomColor: new Color(palette.void),
+      scanColor: new Color(palette.cyan),
       opacity: 1.0,
     },
     `varying vec3 vPosition;

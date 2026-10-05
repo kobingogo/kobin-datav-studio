@@ -10,6 +10,8 @@ import {
 } from "three";
 
 import flyLine from "@/assets/fly_line.png";
+import { useConsole } from "../../../console/store";
+import { palette } from "../../../theme/tokens";
 
 export interface FlyLineProps {
   data: {
@@ -21,6 +23,7 @@ export interface FlyLineProps {
 
 export default function FlyLine(props: FlyLineProps) {
   const { data } = props;
+  const show = useConsole((s) => s.layers.flyline);
   const texture = useTexture(flyLine, (tex) => {
     tex.wrapS = tex.wrapT = RepeatWrapping;
     tex.repeat.set(0.5, 2);
@@ -44,16 +47,16 @@ export default function FlyLine(props: FlyLineProps) {
   });
 
   return (
-    <group renderOrder={10} position-z={1.1}>
+    <group renderOrder={10} position-z={1.1} visible={show}>
       {curve.map((el, idx) => (
         <mesh key={idx}>
           <tubeGeometry args={[el, 32, 0.1, 2, false]} />
           <meshBasicMaterial
             transparent
-            color={0x8fc2ff}
+            color={palette.cyan}
             fog={false}
             map={texture}
-            opacity={0}
+            opacity={0.85}
             depthTest={false}
             blending={AdditiveBlending}
           />

@@ -11,6 +11,8 @@ import {
 import { Instance, Instances, useTexture } from "@react-three/drei";
 
 import guangquan01 from "@/assets/guangquan01.png";
+import { useConsole } from "../../../console/store";
+import { palette } from "../../../theme/tokens";
 
 export interface ConesProps {
   color?: Color;
@@ -22,20 +24,24 @@ export interface ConesProps {
 }
 
 export default function Cones(props: ConesProps) {
-  const { color = new Color(0x8fc2ff) } = props;
+  const { color = new Color(palette.cyan) } = props;
+  const show = useConsole((s) => s.layers.labels);
   const texture1 = useTexture(guangquan01);
 
   return (
-    <group position-z={1} renderOrder={5}>
+    <group position-z={1} renderOrder={5} visible={show}>
       <Instances
         limit={props.data.length}
         position-z={0.3}
         raycast={() => null}>
-        <coneGeometry args={[0.3, 0.5, 4]} />
+        {/* 尺寸从 0.3×0.5 收到 0.16×0.28：原尺寸在俯视取景下是一堆
+            抢眼的白三角，视觉权重压过了地图本身 */}
+        <coneGeometry args={[0.16, 0.28, 4]} />
         <meshBasicMaterial
-          //   transparent
+          transparent
+          opacity={0.5}
           color={color}
-          //   depthWrite={false}
+          depthWrite={false}
           side={DoubleSide}
           blending={AdditiveBlending}
         />
@@ -44,12 +50,12 @@ export default function Cones(props: ConesProps) {
         ))}
       </Instances>
       <Instances limit={props.data.length} raycast={() => null}>
-        <planeGeometry args={[0.8, 0.8]} />
+        <planeGeometry args={[0.55, 0.55]} />
         <meshBasicMaterial
           transparent
           color={color}
           alphaMap={texture1}
-          opacity={1}
+          opacity={0.75}
           depthTest={false}
           fog={false}
           blending={AdditiveBlending}

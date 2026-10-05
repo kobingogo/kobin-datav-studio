@@ -71,7 +71,7 @@ export type SparklesProps = Omit<
   scale?: number | [number, number, number] | Vector3;
 };
 
-const BeamLight = ({}: SparklesProps) => {
+const BeamLight = (_props: SparklesProps) => {
   const ref = useRef<Group>(null!);
 
   useFrame((_, delta) => {
@@ -96,24 +96,24 @@ const BeamLight = ({}: SparklesProps) => {
 
   //   useImperativeHandle(forwardRef, () => ref.current, []);
 
-  const range = 20;
+  const range = 16;
 
   //   console.log(ref);
 
   return (
     <group ref={ref}>
-      {Array.from({ length: 20 }, (_, k) => (
+      {Array.from({ length: 10 }, (_, k) => (
         <mesh
           key={k}
           position={[
             (Math.random() - 0.5) * range,
-            5 - Math.random() * 5,
+            4 - Math.random() * 4,
             (Math.random() - 0.5) * range,
           ]}
-          scale={[1, 2.0 + Math.random() * 4.0, 1]}
+          scale={[1, 1.2 + Math.random() * 2.2, 1]}
           userData={{
-            speed: 2 + Math.random(), // 上升速度
-            resetHeight: 10 + Math.random() * 20, // 飞多高后消失
+            speed: 1.4 + Math.random() * 0.8, // 上升速度
+            resetHeight: 6 + Math.random() * 10, // 飞多高后消失
           }}>
           <cylinderGeometry args={[0.03, 0.03, 1, 6, 1, true]} />
           <SparklesImplMaterial
@@ -122,7 +122,7 @@ const BeamLight = ({}: SparklesProps) => {
             side={DoubleSide}
             blending={AdditiveBlending}
             uColor={0x8fc2ff}
-            uOpacity={0.5 + Math.random() * 0.2}
+            uOpacity={0.16 + Math.random() * 0.12}
           />
         </mesh>
       ))}
