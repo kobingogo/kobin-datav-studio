@@ -10,7 +10,7 @@ import { palette } from "@/theme/tokens";
  * ------------------------------------------------------------------
  * kobin-datav-hangzhou / kobin-datav-smart 是两套独立的 Vue + Vite 工程，
  * 带 Element Plus、mockjs、自己的 ECharts 主题与 2000 行视图层。
- * 它们的品牌色、字体栈、布局基准（1920×1080 定点缩放）与 sc-datav 的
+ * 它们的品牌色、字体栈、布局基准（1920×1080 定点缩放）与 Kobin Datav 的
  * token 体系是两套东西，硬接进 React 树要付出重写样式的代价，且两边
  * 各自迭代时会持续互相打断。
  *
@@ -24,9 +24,9 @@ import { palette } from "@/theme/tokens";
  * 产物 URL。
  *
  * 两个要点：
- *  1. 用 import.meta.env.BASE_URL 跟着 vite base 走，不写死 "/kobin-dataviz/"
+ *  1. 用 import.meta.env.BASE_URL 跟着 vite base 走，不写死基路径
  *  2. 必须显式带 index.html —— 目录形式（…/dir/）在 vite dev 下会被 SPA
- *     fallback 吃掉，返回 sc-datav 自己的 index.html，于是 iframe 里会
+ *     fallback 吃掉，返回 Kobin Datav 自己的 index.html，于是 iframe 里会
  *     再套一个落地页；静态托管与 dev 对目录 URL 的处理也不一致。
  */
 export const embeddedUrl = (dir: string) =>

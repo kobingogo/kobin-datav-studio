@@ -17,7 +17,7 @@
 ```bash
 # 工作区根（w3-dataV/）
 pnpm install                     # 只装 playwright
-pnpm smoke                       # 转发到 sc-datav/tools/smoke.mjs
+pnpm smoke                       # 转发到 kobin-datav/tools/smoke.mjs
 ```
 
 ---
@@ -47,10 +47,10 @@ node tools/build-embedded.mjs --copy-only   # 只重新拷贝，跳过构建
 
 ```bash
 # 起 dev server（端口与下面一致，或用 BASE_URL 覆盖）
-cd sc-datav && pnpm dev --port 5180   # http://localhost:5180/kobin-dataviz/
+cd kobin-datav && pnpm dev --port 5180   # http://localhost:5180/kobin-datav/
 ```
 
-换端口：`BASE_URL=http://localhost:3000/kobin-dataviz/# node tools/smoke.mjs`
+换端口：`BASE_URL=http://localhost:3000/kobin-datav/# node tools/smoke.mjs`
 
 | 脚本 | 作用 | 产物 |
 |---|---|---|

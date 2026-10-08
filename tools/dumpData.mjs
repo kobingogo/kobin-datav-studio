@@ -13,7 +13,7 @@
 import { writeFileSync } from "node:fs";
 import { launch, openPage } from "./lib.mjs";
 
-const BASE = process.env.BASE_URL || "http://localhost:5180/kobin-dataviz/#";
+const BASE = process.env.BASE_URL || "http://localhost:5180/kobin-datav/#";
 const OUT = new URL("../mockup/data.json", import.meta.url).pathname;
 
 const b = await launch();
@@ -22,9 +22,9 @@ await page.goto(BASE.replace(/#+$/, "").replace(/\/$/, "/"), { waitUntil: "load"
 await page.waitForTimeout(2500);
 
 const payload = await page.evaluate(async () => {
-  const s = await import("/kobin-dataviz/src/console/series.ts");
-  const d = await import("/kobin-dataviz/src/console/data.ts");
-  const g = await import("/kobin-dataviz/src/geo/index.ts");
+  const s = await import("/kobin-datav/src/console/series.ts");
+  const d = await import("/kobin-datav/src/console/data.ts");
+  const g = await import("/kobin-datav/src/geo/index.ts");
 
   const metrics = {};
   for (const k of s.METRIC_KEYS) {

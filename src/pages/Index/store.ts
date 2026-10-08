@@ -24,7 +24,7 @@ export interface DemoEntry {
   status: string;
   /**
    * 这块大屏怎么进。
-   *   native —— sc-datav 内的 React 路由，整屏由本应用渲染
+   *   native —— Kobin Datav 内的 React 路由，整屏由本应用渲染
    *   embed  —— 独立 Vue 工程构建成静态产物放进 public/，整屏是一个 iframe
    *
    * 两者进站后画面差别很大（前者与落地页同一套 token，后者是另一套设计语言），

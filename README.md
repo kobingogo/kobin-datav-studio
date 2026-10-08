@@ -1,6 +1,6 @@
 <div align="center">
 
-# Kobin 数据大屏 · Kobin Dataviz
+# Kobin 数据大屏 · Kobin Datav
 
 **Three.js 多场景数据可视化大屏**
 
@@ -133,7 +133,7 @@ shots/              验证脚本的截图产物（不入库）
 `vercel.json` 已配好：Vercel 项目Root Directory 指向本仓库根，
 `pnpm build` 会先构建两个外挂大屏再构建本应用，输出到 `dist/`。
 
-部署基路径由 `vite.config.ts` 的 `base` 决定（当前 `/kobin-dataviz/`）。
+部署基路径由 `vite.config.ts` 的 `base` 决定（本地默认 `/kobin-datav/`，Vercel 上由 `BASE_PATH=/` 覆盖）。
 挂到子路径时改这一处即可，落地页的预览图与 iframe 地址都跟着 `BASE_URL` 走。
 
 ## 数据来源

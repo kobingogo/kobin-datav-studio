@@ -16,7 +16,8 @@
  */
 import { writeFileSync, readFileSync } from "node:fs";
 
-const GEO = new URL("../../sc-datav/src/geo/", import.meta.url).pathname;
+/* 从脚本自身位置推导（tools/lib/ 上溯两级是仓库根），不写死仓库目录名 */
+const GEO = new URL("../../src/geo/", import.meta.url).pathname;
 const OUT = new URL("../../mockup/", import.meta.url).pathname;
 
 const geo = JSON.parse(readFileSync(`${GEO}zhejiang.json`, "utf8"));

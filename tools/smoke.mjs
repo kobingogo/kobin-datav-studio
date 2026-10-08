@@ -283,7 +283,7 @@ console.log("\n[Demo3 查看器]");
       会成为 position:fixed 子元素的包含块，inset:0 参照 wrapper（高 0）。
       症状是嵌入页一片纯底色，而 iframe 其实已 load 完成，很容易误判为产物缺失。
    ② 产物 URL 少了 index.html —— 目录形式被 vite SPA fallback 吃掉，
-      iframe 里会再套一个 sc-datav 落地页，frame 数仍是 2、也没有报错。      */
+      iframe 里会再套一个 Kobin Datav 落地页，frame 数仍是 2、也没有报错。      */
 console.log("\n[静态集成]");
 for (const [r, dir, marker] of [
   ["/hangzhou", "kobin-datav-hangzhou", "杭州市"],

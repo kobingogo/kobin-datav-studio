@@ -3,9 +3,9 @@ body {
 }
 
 /*
- * 原项目在这里 @font-face 了一个装饰字体 pmzd（/sc-datav/font/pmzd.woff2）。
- * 它只被 Demo0 旧的 36px 标题用到，那个标题在 v2 改造里已换成
- * token 字阶 + system font 栈，字体文件因此无人引用 —— 连同它的
- * 硬编码 /sc-datav/ 路径一起移除。
+ * 原项目在这里 @font-face 了一个装饰字体 pmzd（位于旧部署基路径下的
+ * font/pmzd.woff2）。它只被 Demo0 旧的 36px 标题用到，那个标题在 v2 改造里
+ * 已换成 token 字阶 + system font 栈，字体文件因此无人引用 —— 连同它的
+ * 硬编码基路径一起移除。
  * 换字体请改 src/theme/tokens.ts 的 type.sans / type.mono。
  */

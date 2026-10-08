@@ -19,7 +19,8 @@ import { launch } from "./lib.mjs";
 /* ── 目标省与输出 ─────────────────────────────────────────────
  * 直接读 JSON 而不 import src/geo/index.ts：那个模块用 Vite 的
  * JSON import 语法，Node 原生跑不了。构建脚本只需要 bbox 与多边形。 */
-const GEO_DIR = new URL("../sc-datav/src/geo/", import.meta.url).pathname;
+/* 从脚本自身位置推导，不写死仓库目录名（见 buildMockup.mjs 里的说明） */
+const GEO_DIR = new URL("../src/geo/", import.meta.url).pathname;
 const OUT = GEO_DIR;
 const SAT_W = 1600;
 const SAT_H = 1350;

@@ -11,14 +11,14 @@
  *
  *   node tools/shoot-previews.mjs
  *
- * 前置：node tools/build-embedded.mjs 已经把产物拷进 sc-datav/public/
+ * 前置：node tools/build-embedded.mjs 已经把产物拷进 public/
  * 需要 dev server 跑在 5180（或用 BASE_URL 覆盖）。
  */
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { launch, openPage, ROOT } from "./lib.mjs";
 
-const BASE = process.env.BASE_URL ?? "http://localhost:5180/kobin-dataviz";
+const BASE = process.env.BASE_URL ?? "http://localhost:5180/kobin-datav";
 
 /** 与 store.ts 里 DEMOS 的 img 字段一一对应，顺序即 demo_N 的 N */
 const SHOTS = [
@@ -31,7 +31,7 @@ const { page, errors } = await openPage(browser);
 
 for (const { n, dir, settle } of SHOTS) {
   // 必须写显式 index.html：目录形式（/dir/）在 vite dev 下会被 SPA fallback
-  // 吃掉，返回 sc-datav 自己的 index.html —— 表现为"截图拍到落地页"，
+  // 吃掉，返回本应用自己的 index.html —— 表现为"截图拍到落地页"，
   // 而不是报错。静态托管与 dev 对目录 URL 的处理也不一致，显式写最稳。
   const url = `${BASE}/${dir}/index.html`;
   process.stdout.write(`${url} … `);
@@ -42,7 +42,10 @@ for (const { n, dir, settle } of SHOTS) {
   const png = path.join(ROOT, "shots", `_preview_${dir}.png`);
   await page.screenshot({ path: png });
 
-  const jpg = path.join(ROOT, "sc-datav", "public", `demo_${n}.jpg`);
+  /* public/ 在仓库根下。ROOT 由 lib.mjs 从脚本自身位置推导，
+   不要在这里拼目录名 —— 之前多拼了一层仓库目录名，tools/ 移进仓库后
+   就指向了 <仓库>/<仓库>/public，写图失败。*/
+const jpg = path.join(ROOT, "public", `demo_${n}.jpg`);
   // sips 是 macOS 自带的，quality 参数与 demo_0..3.jpg 观感一致
   execFileSync("sips", ["-s", "format", "jpeg", "-s", "formatOptions", "72", png, "--out", jpg], {
     stdio: "ignore",

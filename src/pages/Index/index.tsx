@@ -414,7 +414,7 @@ export default function Index() {
         <BrandMark />
         <BrandText>
           <BrandName>Kobin 数据大屏</BrandName>
-          <BrandSub>Kobin Dataviz · Three.js</BrandSub>
+          <BrandSub>Kobin Datav · Three.js</BrandSub>
         </BrandText>
       </Brand>
 

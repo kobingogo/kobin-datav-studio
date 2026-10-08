@@ -11,7 +11,11 @@
  */
 import { writeFileSync, readFileSync } from "node:fs";
 
-const GEO = new URL("../sc-datav/src/geo/", import.meta.url).pathname;
+/* 从脚本自身位置推导仓库根，不写死目录名。
+   原来写的是 ../<仓库目录名>/src/geo/ —— 那依赖仓库目录恰好与拼接的名字一致，
+   目录一改（或 tools/ 移进仓库）就会多出一层，指向不存在的
+   <仓库目录名>/<仓库目录名>/src/geo/。 */
+const GEO = new URL("../src/geo/", import.meta.url).pathname;
 const OUT = new URL("../mockup/", import.meta.url).pathname;
 
 const geo = JSON.parse(readFileSync(`${GEO}zhejiang.json`, "utf8"));

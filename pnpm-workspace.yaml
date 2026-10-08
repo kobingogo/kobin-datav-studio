@@ -1,4 +1,4 @@
-# sc-datav 是一个可独立构建的仓库，同时包含两个外挂大屏工程。
+# Kobin Datav 是一个可独立构建的仓库，同时包含两个外挂大屏工程。
 #
 # 为什么需要 workspace：构建产物不进 git（见 .gitignore 里
 # public/kobin-datav-* 两行），改由 Vercel 在构建时现场生成。

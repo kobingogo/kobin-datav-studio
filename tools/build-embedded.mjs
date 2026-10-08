@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
- * 外挂大屏产物编排：构建两个 Vue 项目 → 拷贝进 sc-datav/public/。
+ * 外挂大屏产物编排：构建两个 Vue 项目 → 拷贝进 public/。
  *
  * 为什么需要这一步
  * ------------------------------------------------------------------
  * kobin-datav-hangzhou / kobin-datav-smart 是两套独立的 Vue + Vite 工程，
- * 无法被 sc-datav（React + TS）直接 import。采用的方案是「构建成静态产物
- * 放进 sc-datav/public/」，由落地页用 iframe 挂载：
+ * 无法被 Kobin Datav（React + TS）直接 import。采用的方案是「构建成静态产物
+ * 放进 public/」，由落地页用 iframe 挂载：
  *
- *   sc-datav/public/kobin-datav-hangzhou/index.html
- *   sc-datav/public/kobin-datav-smart/index.html
+ *   public/kobin-datav-hangzhou/index.html
+ *   public/kobin-datav-smart/index.html
  *
  * 之所以能这么放，前提是两个工程各自的 vite.config.ts 都满足三条：
  *   1. base: "./'                 → 资源用相对路径，落在任何子目录都能解析
@@ -18,7 +18,7 @@
  * 三条中任何一条不满足，产物放进子目录就会 404。改动这两个工程的构建配置
  * 前请先回到这里复核。
  *
- * 产物不进 git（见 sc-datav/.gitignore），所以 Vercel 上必须在 build 之前
+ * 产物不进 git（见仓库 .gitignore），所以 Vercel 上必须在 build 之前
  * 跑一次本脚本 —— vercel.json 里已经串好。
  *
  *   node tools/build-embedded.mjs            # 构建并拷贝
@@ -49,7 +49,7 @@ const TARGETS = [
  * 定位工程目录。
  *
  * 产物要进 git 仓库才能被 Vercel 构建，而两个 Vue 工程的源码必须与
- * sc-datav 同处一个仓库，所以约定放在 apps/<name>/。这里保留对
+ * Kobin Datav 同处一个仓库，所以约定放在 apps/<name>/。这里保留对
  * 同级目录的兼容，方便还没重组时在别处临时构建。
  *
  * 找不到就报错而不是静默跳过：静默跳过会让 vite build 成功、
@@ -96,8 +96,8 @@ for (const { dir, project } of TARGETS) {
 
   if (!cwd) {
     console.error(
-      `✗ 找不到工程 ${project}。已尝试：\n` +
-        `    sc-datav/apps/${project}\n    apps/${project}\n    ${project}`
+      `✗ 找不到工程 ${project}。已尝试（相对仓库根）：\n` +
+        `    apps/${project}\n    ${project}`
     );
     failed++;
     continue;
@@ -140,7 +140,7 @@ if (failed) {
   console.error(`\n${failed} 个工程失败`);
   process.exit(1);
 }
-console.log("\n全部产物就位。sc-datav dev server 下访问：");
+console.log("\n全部产物就位。dev server 下访问：");
 for (const { dir } of TARGETS) {
-  console.log(`  /kobin-dataviz/${dir}/`);
+  console.log(`  /kobin-datav/${dir}/`);
 }

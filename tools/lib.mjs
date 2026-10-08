@@ -10,12 +10,12 @@ import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-/** tools/ 的上一级就是仓库根（sc-datav） */
+/** tools/ 的上一级就是仓库根（Kobin Datav 仓库） */
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const SHOTS = path.join(ROOT, "shots");
 
 /** 产物目录随项目 base 走，所以按 dev server 的 base 解析路由 */
-export const BASE = process.env.BASE_URL ?? "http://localhost:5180/kobin-dataviz/#";
+export const BASE = process.env.BASE_URL ?? "http://localhost:5180/kobin-datav/#";
 
 export const route = (r) => `${BASE}${r}`;
 
